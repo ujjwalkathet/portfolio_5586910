@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'pages/profile_form_page.dart';
+import 'pages/slider_page.dart';
+import 'pages/settings_page.dart';
+import 'pages/summary_page.dart';
+import 'pages/about_page.dart';
+import 'pages/work_page.dart';
+import 'pages/contact_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -6,117 +13,155 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Ujjwal Kathet Portfolio',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorSchemeSeed: Colors.teal,
+        useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const NavigationHome(),
+        '/about': (context) => const AboutPage(),
+        '/work': (context) => const WorkPage(),
+        '/contact': (context) => const ContactPage(),
+        '/profile': (context) => const ProfileFormPage(),
+        '/settings': (context) => const SettingsPage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/slider') {
+          final args = settings.arguments as int? ?? 50;
+          return MaterialPageRoute(
+            builder: (context) => SliderPage(initialValue: args),
+          );
+        } else if (settings.name == '/summary') {
+          final args = settings.arguments as Map<String, dynamic>? ?? {};
+          return MaterialPageRoute(
+            builder: (context) => SummaryPage(
+              profileData: args['profileData'],
+              sliderValue: args['sliderValue'],
+              settingsData: args['settingsData'],
+            ),
+          );
+        }
+        return null;
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class NavigationHome extends StatelessWidget {
+  const NavigationHome({super.key});
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return const HomePageWithNavigation();
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class HomePageWithNavigation extends StatefulWidget {
+  const HomePageWithNavigation({super.key});
+  @override
+  State<HomePageWithNavigation> createState() => _HomePageWithNavigationState();
+}
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
+  Map<String, dynamic>? _profileData;
+  int? _sliderValue;
+  Map<String, dynamic>? _settingsData;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Portfolio Startseite'),
+        backgroundColor: Colors.teal,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.teal),
+              child: Text('Navigation', style: TextStyle(color: Colors.white, fontSize: 20)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Startseite'),
+              onTap: () => Navigator.pushReplacementNamed(context, '/'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Über mich'),
+              onTap: () => Navigator.pushNamed(context, '/about'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.work),
+              title: const Text('Projekte'),
+              onTap: () => Navigator.pushNamed(context, '/work'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.contact_mail),
+              title: const Text('Kontakt'),
+              onTap: () => Navigator.pushNamed(context, '/contact'),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Willkommen im Portfolio von Ujjwal Kathet", style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.pushNamed(context, '/profile');
+                if (result != null && mounted) {
+                  setState(() {
+                    _profileData = result as Map<String, dynamic>;
+                  });
+                }
+              },
+              child: const Text('Profil bearbeiten'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.pushNamed(context, '/slider', arguments: 50);
+                if (result != null && mounted) {
+                  setState(() {
+                    _sliderValue = result as int;
+                  });
+                }
+              },
+              child: const Text('Slider-Seite'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.pushNamed(context, '/settings');
+                if (result != null && mounted) {
+                  setState(() {
+                    _settingsData = result as Map<String, dynamic>;
+                  });
+                }
+              },
+              child: const Text('Einstellungen'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/summary', arguments: {
+                  'profileData': _profileData,
+                  'sliderValue': _sliderValue,
+                  'settingsData': _settingsData,
+                });
+              },
+              child: const Text('Zur Zusammenfassung'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
